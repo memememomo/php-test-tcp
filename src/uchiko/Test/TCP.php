@@ -20,16 +20,20 @@ class TCP
             }
         }
 
-        $server_code = $args['server'];
-        $port = $args['port'];
-        if (!$port) {
-            $port = EmptyPort::find();
-        }
 
-        $server = new TCP([
+        $server_code = $args['server'];
+        unset($args['server']);
+
+        $port = array_key_exists('port', $args) ? $args['port'] : EmptyPort::find();
+        unset($args['port']);
+
+        $client_code = array_key_exists('client', $args) ? $args['client'] : null;
+        unset($args['client']);
+
+        $server = new TCP(array_merge([
             'code' => $server_code,
             'port' => $port,
-        ]);
+        ], $args));
         $client_code($server->port, $server->pid);
         $server = NULL; // make sure
     }
@@ -90,7 +94,6 @@ class TCP
         }
 
         if ( $pid ) { // parent process.
-            $this->pid = $pid;
             self::wait_port($this->port, $this->max_wait);
             return;
         } else { // child process
