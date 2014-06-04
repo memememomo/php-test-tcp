@@ -94,6 +94,7 @@ class TCP
         }
 
         if ( $pid ) { // parent process.
+            $this->pid = $pid;
             self::wait_port($this->port, $this->max_wait);
             return;
         } else { // child process
